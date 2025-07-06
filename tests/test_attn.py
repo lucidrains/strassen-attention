@@ -1,7 +1,8 @@
 import pytest
 import torch
 
-def test_attn():
+@pytest.mark.parametrize('causal', (False, True))
+def test_attn(causal):
     from strassen_attention.strassen_attention import strassen_attend
 
     q = torch.randn(1, 8, 32, 16)
@@ -14,7 +15,8 @@ def test_attn():
         k.clone(),
         v,
         v.clone(),
-        sim_clamp_value = 50.
+        sim_clamp_value = 50.,
+        causal = causal
     )
 
     assert attended.shape == (1, 8, 32, 16)

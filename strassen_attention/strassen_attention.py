@@ -24,7 +24,8 @@ def strassen_attend(
     k2,  # b h k d
     v1,  # b h j dv
     v2,  # b h k dv,
-    sim_clamp_value = None
+    sim_clamp_value = None,
+    causal = False
 ): # b h i dv
 
     scale = q.shape[-1] ** -0.5
@@ -35,6 +36,13 @@ def strassen_attend(
     target = stack((k1, q, k2))
 
     sims = einsum(source, target, '... i d, ... j d -> ... i j')
+
+    # causal mask
+
+    if causal:
+        i, j = sims.shape[-2:]
+        causal_mask = torch.ones((i, j), dtype = torch.bool, device = q.device).triu(j - i + 1)
+        sims = sims.masked_fill(causal_mask, -torch.finfo(sims.dtype).max)
 
     # do their efficient way
 
