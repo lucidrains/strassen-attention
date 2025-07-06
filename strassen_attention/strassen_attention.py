@@ -13,6 +13,9 @@ def exists(v):
 def default(v, d):
     return v if exists(v) else d
 
+def softclamp(t, value = 30.):
+    return (t / value).tanh() * value
+
 # main attention function
 
 def strassen_attend(
@@ -20,7 +23,8 @@ def strassen_attend(
     k1,  # b h j d
     k2,  # b h k d
     v1,  # b h j dv
-    v2,  # b h k dv
+    v2,  # b h k dv,
+    sim_clamp_value = None
 ): # b h i dv
 
     scale = q.shape[-1] ** -0.5
@@ -32,8 +36,14 @@ def strassen_attend(
 
     sims = einsum(source, target, '... i d, ... j d -> ... i j')
 
-    # do their efficient way, but there could be an unaddressed instability issue in this paper
-    # deal with it with softclamping later
+    # do their efficient way
+
+    # there could be an unaddressed instability issue in this paper, deal with it using the proven similarity softclamp from gemma2
+
+    if exists(sim_clamp_value):
+        sims = softclamp(sims, sim_clamp_value)
+
+    # exponentiate for softmax
 
     exp_sims = sims.exp()
 

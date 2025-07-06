@@ -14,6 +14,7 @@ def test_attn():
         k.clone(),
         v,
         v.clone()
+        sim_clamp_value = 50.
     )
 
     assert attended.shape == (1, 8, 32, 16)
