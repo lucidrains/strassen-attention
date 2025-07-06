@@ -1,3 +1,5 @@
+<img src="./fig1.png" width="500px"></img>
+
 ## Strassen Attention (wip)
 
 Implementation of [Strassen attention](https://arxiv.org/abs/2501.19215), from Kozachinskiy et al. of National Center of AI in Chile
