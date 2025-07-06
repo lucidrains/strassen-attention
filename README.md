@@ -4,6 +4,33 @@
 
 Implementation of [Strassen attention](https://arxiv.org/abs/2501.19215), from Kozachinskiy et al. of National Center of AI in Chile
 
+## Install
+
+```shell
+$ pip install strassen-attention
+```
+
+## Usage
+
+```python
+import torch
+from strassen_attention import strassen_attend
+
+q = torch.randn(1, 8, 32, 16)
+k = torch.randn(1, 8, 32, 16)
+v = torch.randn(1, 8, 32, 16)
+
+attended = strassen_attend(
+    q,
+    k,
+    k.clone(),
+    v,
+    v.clone()
+)
+
+assert attended.shape == q.shape
+```
+
 ## Citations
 
 ```bibtex
