@@ -13,7 +13,7 @@ def test_attn():
         k,
         k.clone(),
         v,
-        v.clone()
+        v.clone(),
         sim_clamp_value = 50.
     )
 
