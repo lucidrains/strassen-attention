@@ -37,7 +37,7 @@ def strassen_attend(
 
     keys = stack((k1, k2))
 
-    sims = einsum(q, keys, '... i d, keys ... j_or_k d -> keys ... i j_or_k')
+    sims = einsum(q, keys, '... i d, keys ... jk d -> keys ... i jk')
 
     sim_jk = einsum(k1, k2, '... j d, ... k d -> ... j k')
 

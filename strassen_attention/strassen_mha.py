@@ -7,6 +7,8 @@ from strassen_attention.strassen_attention import strassen_attend
 from einops import rearrange
 from einops.layers.torch import Rearrange
 
+from rotary_embedding_torch import RotaryEmbedding
+
 # helper functions
 
 def exists(v):
@@ -28,10 +30,13 @@ class StrassenMHA(Module):
         causal = False,
         qk_rmsnorm = True,
         pre_rmsnorm = False,
-        attn_logits_clamp_value = 40.
+        attn_logits_clamp_value = 40.,
+        rotary_embed = False
     ):
         super().__init__()
         self.pre_norm = RMSNorm(dim) if pre_rmsnorm else Identity()
+
+        self.rotary_embed = RotaryEmbedding(dim_head // 2) if rotary_embed else None
 
         dim_head_values = default(dim_head_values, dim_head)
         kv_heads = default(kv_heads, heads)
@@ -84,6 +89,9 @@ class StrassenMHA(Module):
             q = self.q_norm(q)
             k1 = self.k1_norm(k1)
             k2 = self.k2_norm(k2)
+
+        if exists(self.rotary_embed):
+            q, k1, k2 = tuple(self.rotary_embed.rotate_queries_or_keys(t) for t in (q, k1, k2))
 
         out = strassen_attend(q, k1, k2, v1, v2, causal = self.causal, sim_clamp_value = self.attn_logits_clamp_value)
 

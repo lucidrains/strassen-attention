@@ -28,6 +28,7 @@ class StrassenTransformer(Module):
         dim_head = 64,
         causal = False,
         ff_expansion = 4.,
+        rotary_embed = False,
         attn_kwargs: dict = dict(
             dim_head_values = None,
             kv_heads = None,
@@ -47,6 +48,7 @@ class StrassenTransformer(Module):
                 heads = heads,
                 dim_head = dim_head,
                 pre_rmsnorm = True,
+                rotary_embed = rotary_embed,
                 **attn_kwargs
             )
 

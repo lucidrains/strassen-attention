@@ -75,7 +75,6 @@ class StrassenLM(Module):
     ):
         super().__init__()
         self.token_emb = nn.Embedding(num_tokens, dim)
-        self.pos_emb = nn.Embedding(max_seq_len, dim)
 
         self.transformer = StrassenTransformer(
             dim = dim,
@@ -83,6 +82,7 @@ class StrassenLM(Module):
             dim_head = dim_head,
             heads = heads,
             causal = True,
+            rotary_embed = True,
             **transformer_kwargs
         )
 
@@ -117,9 +117,6 @@ class StrassenLM(Module):
         seq_len, device = x.shape[-1], x.device
 
         tokens = self.token_emb(x)
-        pos_emb = self.pos_emb(torch.arange(seq_len, device = device))
-
-        tokens = tokens + pos_emb
 
         embed = self.transformer(tokens)
 
