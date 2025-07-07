@@ -1,6 +1,6 @@
 [project]
 name = "strassen-attention"
-version = "0.0.7"
+version = "0.0.9"
 description = "Strassen Attention"
 authors = [
     { name = "Phil Wang", email = "lucidrains@gmail.com" }

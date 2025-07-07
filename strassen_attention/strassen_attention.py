@@ -25,7 +25,8 @@ def strassen_attend(
     v1,  # b h j dv
     v2,  # b h k dv,
     sim_clamp_value = None,
-    causal = False
+    causal = False,
+    activate_fn = torch.exp
 ): # b h i dv
 
     scale = q.shape[-1] ** -0.5
@@ -51,9 +52,11 @@ def strassen_attend(
     if exists(sim_clamp_value):
         sims = softclamp(sims, sim_clamp_value)
 
-    # exponentiate for softmax
+    # activation function, defaults to exponentiation
 
-    exp_sims = sims.exp()
+    exp_sims = activate_fn(sims)
+
+    # decomposed (n x n) X, Z, Y in paper
 
     exp_sim_ij, exp_sim_ki, exp_sim_jk = exp_sims
 

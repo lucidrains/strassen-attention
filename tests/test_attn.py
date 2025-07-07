@@ -29,3 +29,11 @@ def test_mha(causal):
 
     x = torch.randn(1, 256, 512)
     assert mha(x).shape == x.shape
+
+def test_transformer():
+    from strassen_attention.strassen_transformer import StrassenTransformer
+
+    transformer = StrassenTransformer(dim = 512, depth = 2)
+
+    x = torch.randn(1, 256, 512)
+    assert transformer(x).shape == x.shape
