@@ -1,3 +1,5 @@
 from strassen_attention.strassen_attention import strassen_attend
 
 from strassen_attention.strassen_mha import StrassenMHA
+
+from strassen_attention.strassen_transformer import StrassenTransformer

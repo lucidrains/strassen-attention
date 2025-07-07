@@ -31,9 +31,11 @@ def strassen_attend(
 
     scale = q.shape[-1] ** -0.5
 
+    q = q * scale
+
     # three way dot product
 
-    source = stack((q, k2, k1)) * scale
+    source = stack((q, k2, k1))
     target = stack((k1, q, k2))
 
     sims = einsum(source, target, '... i d, ... j d -> ... i j')

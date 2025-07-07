@@ -1,6 +1,6 @@
 [project]
 name = "strassen-attention"
-version = "0.0.9"
+version = "0.1.0"
 description = "Strassen Attention"
 authors = [
     { name = "Phil Wang", email = "lucidrains@gmail.com" }
@@ -34,7 +34,11 @@ Homepage = "https://pypi.org/project/strassen-attention/"
 Repository = "https://github.com/lucidrains/strassen-attention"
 
 [project.optional-dependencies]
-examples = []
+
+examples = [
+    "tqdm
+]
+
 test = [
     "pytest"
 ]
