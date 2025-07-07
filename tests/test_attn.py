@@ -20,3 +20,12 @@ def test_attn(causal):
     )
 
     assert attended.shape == (1, 8, 32, 16)
+
+@pytest.mark.parametrize('causal', (False, True))
+def test_mha(causal):
+    from strassen_attention.strassen_mha import StrassenMHA
+
+    mha = StrassenMHA(dim = 512)
+
+    x = torch.randn(1, 256, 512)
+    assert mha(x).shape == x.shape
