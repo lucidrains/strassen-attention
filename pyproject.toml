@@ -11,7 +11,8 @@ license = { file = "LICENSE" }
 keywords = [
     'artificial intelligence',
     'deep learning',
-    'attention mechanisms'
+    'attention mechanisms',
+    'higher order attention
 ]
 
 classifiers=[
@@ -36,7 +37,7 @@ Repository = "https://github.com/lucidrains/strassen-attention"
 [project.optional-dependencies]
 
 examples = [
-    "tqdm
+    "tqdm"
 ]
 
 test = [
