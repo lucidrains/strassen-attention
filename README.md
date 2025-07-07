@@ -34,6 +34,7 @@ assert attended.shape == q.shape
 For the multi-head attention module
 
 ```python
+import torch
 from strassen_attention.strassen_mha import StrassenMHA
 
 mha = StrassenMHA(dim = 512, causal = True)
@@ -41,6 +42,19 @@ mha = StrassenMHA(dim = 512, causal = True)
 tokens = torch.randn(1, 256, 512)
 
 assert mha(tokens).shape == tokens.shape
+```
+
+Strassen attention transformer
+
+```python
+import torch
+import torch
+from strassen_attention.strassen_transformer import StrassenTransformer
+
+transformer = StrassenTransformer(dim = 512, depth = 4)
+
+x = torch.randn(1, 16 * 16, 512)
+assert transformer(x).shape == x.shape
 ```
 
 ## Citations
