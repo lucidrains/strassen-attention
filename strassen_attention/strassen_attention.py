@@ -35,23 +35,25 @@ def strassen_attend(
 
     # three way dot product
 
-    source = stack((q, q, k1))
-    target = stack((k1, k2, k2))
+    keys = stack((k1, k2))
 
-    sims = einsum(source, target, '... i d, ... j d -> ... i j')
-    
+    sims = einsum(q, keys, '... i d, keys ... j_or_k d -> keys ... i j_or_k')
+
+    sim_jk = einsum(k1, k2, '... j d, ... k d -> ... j k')
+
     # there could be an unaddressed instability issue in this paper, deal with it using the proven similarity softclamp from gemma2
 
     if exists(sim_clamp_value):
         sims = softclamp(sims, sim_clamp_value)
+        sim_jk = softclamp(sim_jk, sim_clamp_value)
 
-    sim_ij, sim_ik, sim_jk = sims
+    sim_ij, sim_ik, sim_jk = *sims, sim_jk
 
     # causal mask
 
     if causal:
-        seq_len = sims.shape[-1]
-        causal_mask = torch.ones((seq_len, seq_len), dtype = torch.bool, device = q.device).triu(1)
+        i, j = sims.shape[-2:]
+        causal_mask = torch.ones((i, j), dtype = torch.bool, device = q.device).triu(j - i + 1)
         sim_ij = sim_ij.masked_fill(causal_mask, -torch.finfo(sims.dtype).max)
         sim_ik = sim_ik.masked_fill(causal_mask, -torch.finfo(sims.dtype).max)
 
@@ -59,7 +61,7 @@ def strassen_attend(
 
     # activation function, defaults to exponentiation
 
-    exp_sims = activate_fn(stack((sim_ij, sim_ik, sim_jk)))
+    exp_sims = tuple(activate_fn(t) for t in (sim_ij, sim_ik, sim_jk))
 
     # decomposed (n x n) X, Z, Y in paper
 
