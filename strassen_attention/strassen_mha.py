@@ -1,6 +1,6 @@
 import torch
 from torch import stack
-from torch.nn import Module, Linear
+from torch.nn import Module, Linear, RMSNorm, Identity
 
 from strassen_attention.strassen_attention import strassen_attend
 
@@ -25,9 +25,14 @@ class StrassenMHA(Module):
         dim_head_values = None,  # values head dimension (defaults to qk head dimension)
         heads = 8,               # query heads
         kv_heads = None,         # key / value heads (defaults to query heads)
-        causal = False
+        causal = False,
+        qk_rmsnorm = True,
+        pre_rmsnorm = False,
+        attn_logits_clamp_value = 40.
     ):
         super().__init__()
+        self.pre_norm = RMSNorm(dim) if pre_rmsnorm else Identity()
+
         dim_head_values = default(dim_head_values, dim_head)
         kv_heads = default(kv_heads, heads)
 
@@ -40,6 +45,20 @@ class StrassenMHA(Module):
         )
 
         self.to_qkv = Linear(dim, sum(self.split_dims), bias = False)
+
+        # qk rmsnorm, now used in a number of works, from stable diffusion 3 to alphagenome. it is fine
+
+        self.qk_rmsnorm = qk_rmsnorm
+        if qk_rmsnorm:
+            self.q_norm = RMSNorm(dim_head)
+            self.k1_norm = RMSNorm(dim_head)
+            self.k2_norm = RMSNorm(dim_head)
+
+        # gemma2 - like attention logit soft clamping
+
+        self.attn_logits_clamp_value = attn_logits_clamp_value
+
+        # split out attention heads
 
         self.split_q_heads = Rearrange('... n (h d) -> ... h n d', h = heads)
         self.split_kv_heads = Rearrange('... n (h d) -> ... h n d', h = kv_heads)
@@ -54,13 +73,19 @@ class StrassenMHA(Module):
         self,
         x
     ):
+        x = self.pre_norm(x)
 
         q, k1, k2, v1, v2 = self.to_qkv(x).split(self.split_dims, dim = -1)
 
         q = self.split_q_heads(q)
         k1, k2, v1, v2 = self.split_kv_heads(stack((k1, k2, v1, v2)))
 
-        out = strassen_attend(q, k1, k2, v1, v2, causal = self.causal)
+        if self.qk_rmsnorm:
+            q = self.q_norm(q)
+            k1 = self.k1_norm(k1)
+            k2 = self.k2_norm(k2)
+
+        out = strassen_attend(q, k1, k2, v1, v2, causal = self.causal, sim_clamp_value = self.attn_logits_clamp_value)
 
         out = self.merge_heads(out)
 
