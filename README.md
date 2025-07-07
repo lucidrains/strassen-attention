@@ -31,6 +31,18 @@ attended = strassen_attend(
 assert attended.shape == q.shape
 ```
 
+For the multi-head attention module
+
+```python
+from strassen_attention.strassen_mha import StrassenMHA
+
+mha = StrassenMHA(dim = 512, causal = True)
+
+tokens = torch.randn(1, 256, 512)
+
+assert mha(tokens).shape == tokens.shape
+```
+
 ## Citations
 
 ```bibtex
