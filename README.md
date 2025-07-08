@@ -70,3 +70,14 @@ assert transformer(x).shape == x.shape
     url     = {https://arxiv.org/abs/2501.19215}, 
 }
 ```
+
+```bibtex
+@article{Peng2024OnLO,
+    title     = {On Limitations of the Transformer Architecture},
+    author    = {Binghui Peng and Srini Narayanan and Christos Papadimitriou},
+    journal   = {ArXiv},
+    year      = {2024},
+    volume    = {abs/2402.08164},
+    url       = {https://api.semanticscholar.org/CorpusID:267636545}
+}
+```
