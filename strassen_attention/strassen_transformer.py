@@ -69,3 +69,31 @@ class StrassenTransformer(Module):
             x = ff(x) + x
 
         return self.norm(x)
+
+# feature map acceptor
+# so can be used at the middle of a image or video unet easily
+
+from einops import rearrange, pack, unpack
+
+class FeatureMapWrapper(Module):
+    def __init__(
+        self,
+        transformer: StrassenTransformer
+    ):
+        super().__init__()
+        self.transformer = transformer
+
+    def forward(
+        self,
+        fmap # b c *dims
+    ):
+
+        fmap = rearrange(fmap, 'b d ... -> b ... d')
+
+        fmap, packed_shape = pack((fmap,), 'b * c')
+
+        attended = self.transformer(fmap)
+
+        attended, = unpack(attended, packed_shape, 'b * c')
+
+        return rearrange(attended, 'b ... d -> b d ...')

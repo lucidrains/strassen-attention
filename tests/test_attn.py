@@ -55,3 +55,9 @@ def test_transformer():
 
     x = torch.randn(1, 256, 512)
     assert transformer(x).shape == x.shape
+
+    from strassen_attention.strassen_transformer import FeatureMapWrapper
+
+    wrapped = FeatureMapWrapper(transformer)
+    fmap = torch.randn(1, 512, 8, 8, 8)
+    assert wrapped(fmap).shape == fmap.shape

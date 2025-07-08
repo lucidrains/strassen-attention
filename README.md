@@ -2,7 +2,7 @@
 
 ## Strassen Attention
 
-Implementation of [Strassen attention](https://arxiv.org/abs/2501.19215), from Kozachinskiy et al. of [National Center of AI](https://cenia.cl/) in Chile
+Implementation of [Strassen attention](https://arxiv.org/abs/2501.19215), from Kozachinskiy et al. of [National Center of AI](https://cenia.cl/) in Chile 🇨🇱
 
 ## Install
 
