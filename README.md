@@ -48,7 +48,6 @@ Strassen attention transformer
 
 ```python
 import torch
-import torch
 from strassen_attention.strassen_transformer import StrassenTransformer
 
 transformer = StrassenTransformer(dim = 512, depth = 4)
